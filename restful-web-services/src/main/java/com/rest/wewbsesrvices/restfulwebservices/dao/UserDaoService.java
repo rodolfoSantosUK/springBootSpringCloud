@@ -12,7 +12,7 @@ public class UserDaoService {
 
     private static List<User> users = new ArrayList<User>();
 
-    private static Integer usersCount;
+    private static Integer usersCount = 3;
 
     static {
         users.add(new User(1, "Adam", new Date()));
@@ -25,7 +25,7 @@ public class UserDaoService {
     }
 
     public User save(User user) {
-        if (user.getId() == null) {
+        if ( null == user.getId()   ) {
             user.setId(++usersCount);
         }
         users.add(user);
