@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -33,17 +35,22 @@ public class UserResource {
     }
 
     @PostMapping("/users")
-    public ResponseEntity createUser(@RequestBody User user) {
+    public ResponseEntity createUser(  @Valid @RequestBody User user) {
         User savedUser = userDaoService.save(user);
-
-        // Construtor de componente de Uri de servlet
+       // Construtor de componente de Uri de servlet
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}") // substituindo esse item da requisição pelo id retornado ao salvar usuário
                 .buildAndExpand(savedUser.getId()).toUri();
 
-        return ResponseEntity.created(location).build(); // vai criar no heade o location
+        return ResponseEntity.created(location).build(); // vai criar no header o location
     }
 
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        User user = userDaoService.deleteById(id);
+        if (null == user)
+            throw new UserNotFoundException("id - " + id);
+    }
 
 }

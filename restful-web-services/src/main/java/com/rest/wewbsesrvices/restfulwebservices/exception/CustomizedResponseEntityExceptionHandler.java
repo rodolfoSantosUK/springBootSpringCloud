@@ -1,7 +1,9 @@
 package com.rest.wewbsesrvices.restfulwebservices.exception;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,12 +30,25 @@ public class CustomizedResponseEntityExceptionHandler
 
     @ExceptionHandler(UserNotFoundException.class)
     public final ResponseEntity<Object> handleUserNotFoundException
-             (UserNotFoundException ex , WebRequest webRequest) throws UserNotFoundException {
-         ExceptionResponse exceptionNotFoundResponse = new ExceptionResponse
-                                               (webRequest.getDescription(false),
-                                                ex.getMessage(),
-                                                new Date());
-          return new ResponseEntity(exceptionNotFoundResponse, HttpStatus.NOT_FOUND);
+            (UserNotFoundException ex, WebRequest webRequest) throws UserNotFoundException {
+        ExceptionResponse exceptionNotFoundResponse = new ExceptionResponse
+                (webRequest.getDescription(false),
+                        ex.getMessage(),
+                        new Date());
+        return new ResponseEntity(exceptionNotFoundResponse, HttpStatus.NOT_FOUND);
     }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse
+                                              ( ex.getBindingResult().toString(),
+                                               "Validation failed",
+                                                new Date());
+
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }
 
